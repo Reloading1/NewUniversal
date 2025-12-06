@@ -1,0 +1,528 @@
+-- 🔥 Saber Simulator Pt 2 ULTIMATE HUB (Dec 2025) | FULL CHEAT MENU | All Features/Toggles/Buttons
+-- Place ID: 3823781113 | RAYFIELD UI (Tabbed Full Menu) | ON/OFF Works Perfect | Fluxus/Krnl/Delta | CLEAN ⚠️ Alt Only
+-- FIXED: Winter TPs Direct Only (No Portal/Wait) | Updated Coords | Added Trade Plaza | All Off Default
+-- UPDATED: TP Buttons - More Reliable InstantTP (Added Checks, Velocity Reset, No Toggles - Pure Click-to-TP Anytime)
+-- ULTIMATE: Invisible Big Hitbox Expander - BOSSES ONLY (Toggle via Optimized Scans | HRP Focus | LOW LAG (2s Periodic + Events) | Excludes Self/Players)
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+   Name = "🎄 Saber Pt 2 FULL CHEAT HUB",
+   LoadingTitle = "Full Menu Loading...",
+   LoadingSubtitle = "All Cheats Ready - Farm/Buy/TP!",
+   ConfigurationSaving = { Enabled = true, FolderName = "SaberFullHub", FileName = "v1" }
+})
+local RS = game:GetService("ReplicatedStorage")
+local Events = RS:WaitForChild("Events")
+local SwingSaber = Events:WaitForChild("SwingSaber")
+local SellStrength = Events:WaitForChild("SellStrength")
+local UIAction = Events:WaitForChild("UIAction")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local Humanoid = Character:WaitForChild("Humanoid")
+-- Saved Position (Legacy)
+local SavedPosition = nil
+-- TP Positions
+local TPDungeonsDoor = Vector3.new(366, 184, -39)
+local TPWaterBoss = Vector3.new(115, 281, -560)
+local TPEarthBoss = Vector3.new(777, 209, -241)
+local TPPlasmaRealm = Vector3.new(879, 193, 58)
+local TPLavaBoss = Vector3.new(544, 190, 465)
+local TPWinterArea = Vector3.new(618, 185, 62)
+local TPWinterLandBoss = Vector3.new(744, 72, 2209)
+local TPWinterSell = Vector3.new(872, 71, 2168)
+local TPWinterShopEggs = Vector3.new(831, 72, 2276)
+local TPWinterMerchant = Vector3.new(832, 71, 2169)
+local TPWinterShop = Vector3.new(794, 71, 2244)
+local TPPets = Vector3.new(556, 184, -12)
+local TPShop = Vector3.new(465, 184, 49)
+local TPSell = Vector3.new(532, 184, 110)
+local TPCrownShop = Vector3.new(711, 184, 177)
+local TPCrownHill = Vector3.new(735, 250, 50)
+local TPBossSpawn = Vector3.new(406, 186, 157)
+local TPTradePlaza = Vector3.new(580, 184, 149)
+-- Respawn Handler
+local function onCharacterAdded(char)
+   Character = char
+   Humanoid = char:WaitForChild("Humanoid")
+   HumanoidRootPart = char:WaitForChild("HumanoidRootPart")
+   Humanoid.WalkSpeed = WalkSpeed
+if Toggles.InfJump then
+      InfiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+         Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+end)
+end
+if SavedPosition and HumanoidRootPart then
+      task.wait(1)
+      InstantTP(SavedPosition)
+end
+end
+Player.CharacterAdded:Connect(onCharacterAdded)
+-- Anti-AFK
+local VirtualUser = game:GetService("VirtualUser")
+Player.Idled:Connect(function() VirtualUser:CaptureController() VirtualUser:ClickButton2(Vector2.new()) end)
+-- TOGGLES
+local Toggles = {
+   AutoSwing = false,
+   AutoSell = false,
+   AutoBuyAll = false,
+   AutoCollectCrowns = false,
+   InfJump = false,
+   BossHitboxExpander = false
+}
+local SwingSpeed = 0.12
+local WalkSpeed = 16
+local InfiniteJumpConnection = nil
+local BossHitboxThread = nil
+local DescendantConnection = nil
+-- Infinite Jump
+local function ToggleInfJump(value)
+if value then
+      InfiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+if Humanoid then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+end
+end)
+else
+if InfiniteJumpConnection then
+         InfiniteJumpConnection:Disconnect()
+         InfiniteJumpConnection = nil
+end
+end
+end
+-- Invisible Big Hitbox Expander for Bosses Only (Toggle - Optimized)
+local HITBOX_SIZE = Vector3.new(200, 100, 200) -- Really big invisible hitbox
+local DEFAULT_HRP_SIZE = Vector3.new(2, 2, 1)
+-- Boss Keywords (Expanded for Winter events)
+local bossKeywords = {"boss", "santa", "winter", "christmas", "eventboss", "frost", "yeti", "wizard", "deer", "zombie", "cheesmas"}
+local function isBoss(model)
+    if not model or not model.Parent then return false end
+    local name = model.Name:lower()
+    for _, keyword in ipairs(bossKeywords) do
+        if name:find(keyword) then return true end
+    end
+    return false
+end
+local function expandBossHitbox(part)
+    if not Toggles.BossHitboxExpander then return end
+    if not part or not part:IsA("BasePart") or part.Name ~= "HumanoidRootPart" then return end
+    local character = part.Parent
+    if not character or not character:IsA("Model") then return end
+
+    -- SKIP ALL PLAYERS (Strict check)
+    if Players:GetPlayerFromCharacter(character) then return end
+
+    -- ONLY BOSSES
+    if isBoss(character) then
+        part.Size = HITBOX_SIZE
+        part.Transparency = 1 -- Fully invisible
+        part.CanCollide = false
+        part.Material = Enum.Material.ForceField
+        -- No color or visual - fully invisible
+
+        -- Remove any existing visual
+        local existing = part:FindFirstChild("BossHitboxVisual")
+        if existing then existing:Destroy() end
+
+        print("Invisible boss hitbox expanded on: " .. character.Name) -- Debug
+    end
+end
+local function resetBossHitbox(part)
+    if not part or not part:IsA("BasePart") or part.Name ~= "HumanoidRootPart" then return end
+    local character = part.Parent
+    if not character or not character:IsA("Model") then return end
+
+    -- SKIP ALL PLAYERS
+    if Players:GetPlayerFromCharacter(character) then return end
+
+    -- ONLY BOSSES
+    if isBoss(character) then
+        part.Size = DEFAULT_HRP_SIZE
+        part.Transparency = 1 -- Default HRP is invisible
+        part.CanCollide = false
+        part.Material = Enum.Material.Plastic -- Default
+        part.Color = Color3.fromRGB(163, 162, 165) -- Default HRP color if visible
+
+        -- Remove any existing visual
+        local existing = part:FindFirstChild("BossHitboxVisual")
+        if existing then existing:Destroy() end
+
+        print("Boss hitbox reset on: " .. character.Name) -- Debug
+    end
+end
+local function scanAndExpandBosses()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj.Name == "HumanoidRootPart" then
+            expandBossHitbox(obj)
+        end
+    end
+end
+local function scanAndResetBosses()
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj.Name == "HumanoidRootPart" then
+            resetBossHitbox(obj)
+        end
+    end
+end
+local function ToggleBossHitboxExpander(value)
+   Toggles.BossHitboxExpander = value
+if value then
+      scanAndExpandBosses() -- Initial expand
+      BossHitboxThread = task.spawn(function()
+while Toggles.BossHitboxExpander do
+            scanAndExpandBosses()
+            task.wait(2) -- Less frequent to reduce lag
+end
+end)
+      -- Manage DescendantAdded connection to avoid accumulation
+      if DescendantConnection then
+          DescendantConnection:Disconnect()
+      end
+      DescendantConnection = Workspace.DescendantAdded:Connect(function(obj)
+          if obj.Name == "HumanoidRootPart" then
+              task.wait(0.05)
+              expandBossHitbox(obj)
+          end
+      end)
+      Rayfield:Notify({Title = "🎯 Invisible Boss Hitboxes ON (200x100x200 | Optimized)", Duration = 2.5})
+else
+if BossHitboxThread then
+         task.cancel(BossHitboxThread)
+         BossHitboxThread = nil
+end
+      scanAndResetBosses()
+      if DescendantConnection then
+          DescendantConnection:Disconnect()
+          DescendantConnection = nil
+      end
+      Rayfield:Notify({Title = "🎯 Invisible Boss Hitboxes OFF", Duration = 2})
+end
+end
+-- Auto Collect Crowns (Ground Pickup)
+local function StartAutoCollectCrowns()
+spawn(function()
+while Toggles.AutoCollectCrowns do
+pcall(function()
+local crowns = {}
+for _, obj in pairs(Workspace:GetDescendants()) do
+if obj:IsA("BasePart") and string.lower(obj.Name):find("crown") then
+                  table.insert(crowns, obj)
+end
+end
+if #crowns > 0 then
+for _, crown in pairs(crowns) do
+if crown and crown.Parent then
+                     InstantTP(crown.Position)
+                     task.wait(0.5) -- Time to collect/touch
+end
+end
+end
+end)
+         task.wait(1)
+end
+end)
+end
+-- Instant TP (Enhanced: Added Robust Checks, Velocity Reset for Stability - No Buggy Behavior)
+local function InstantTP(pos)
+if not Character or not Character.Parent then return end
+if not HumanoidRootPart or not HumanoidRootPart.Parent then return end
+local targetCFrame = CFrame.new(pos + Vector3.new(0, 5, 0))
+   HumanoidRootPart.CFrame = targetCFrame
+   RunService.Heartbeat:Wait()
+   HumanoidRootPart.CFrame = targetCFrame
+-- Reset velocity to prevent drifting/falling issues
+if HumanoidRootPart.AssemblyLinearVelocity then
+      HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+end
+if HumanoidRootPart.AssemblyAngularVelocity then
+      HumanoidRootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+end
+end
+-- Buy All
+local function BuyAll()
+pcall(function()
+      UIAction:FireServer("BuyAllWeapons")
+      UIAction:FireServer("BuyAllDNAs")
+      UIAction:FireServer("BuyAllAuras")
+      UIAction:FireServer("BuyAllPetAuras")
+      UIAction:FireServer("BuyAllBossBoosts")
+      UIAction:FireServer("BuyAllClasses")
+      UIAction:FireServer("BuyAllCharms")
+      UIAction:FireServer("EquipBestWeapon")
+      UIAction:FireServer("EquipBestClass")
+      UIAction:FireServer("BuyAllWinterWeapons")
+      UIAction:FireServer("BuyAllChristmasAuras")
+      UIAction:FireServer("BuyAllHolidayBoosts")
+      UIAction:FireServer("EquipBestWinterWeapon")
+for i = 1, 50 do
+         UIAction:FireServer("BuyWinterCrowns")
+         UIAction:FireServer("BuyWinterCoins")
+         UIAction:FireServer("BuyWinterCandyCanes")
+         UIAction:FireServer("BuyWinterShields")
+         UIAction:FireServer("BuyWinterPets")
+         UIAction:FireServer("BuyWinterBoosts")
+         task.wait(0.02)
+end
+for i = 1, 20 do UIAction:FireServer("BuyAllDNAs") task.wait(0.05) end
+end)
+end
+-- TAB 1: FARM/CORE
+local FarmTab = Window:CreateTab("🚀 Farm/Core", 4483345998)
+FarmTab:CreateToggle({
+   Name = "Auto Swing Saber",
+   CurrentValue = false,
+   Flag = "SwingToggle",
+   Callback = function(Value)
+      Toggles.AutoSwing = Value
+if Value then Rayfield:Notify({Title = "⚔️ Swing ON", Duration = 2}) end
+spawn(function()
+while Toggles.AutoSwing do
+pcall(SwingSaber.FireServer, SwingSaber)
+            task.wait(SwingSpeed)
+end
+end)
+end
+})
+FarmTab:CreateInput({
+   Name = "Swing Speed (Lower = Faster)",
+   PlaceholderText = "0.12",
+   RemoveTextAfterFocusLost = false,
+   Flag = "SwingSpeedInput",
+   Callback = function(Text)
+      SwingSpeed = tonumber(Text) or 0.12
+end
+})
+FarmTab:CreateToggle({
+   Name = "Auto Sell Strength",
+   CurrentValue = false,
+   Flag = "SellToggle",
+   Callback = function(Value)
+      Toggles.AutoSell = Value
+if Value then Rayfield:Notify({Title = "💰 Sell ON", Duration = 2}) end
+spawn(function()
+while Toggles.AutoSell do
+pcall(SellStrength.FireServer, SellStrength)
+            task.wait(2.5)
+end
+end)
+end
+})
+FarmTab:CreateSlider({
+   Name = "Walk Speed",
+   Range = {16, 100},
+   Increment = 1,
+   Suffix = " Speed",
+   CurrentValue = 16,
+   Flag = "WalkSpeedSlider",
+   Callback = function(Value)
+      WalkSpeed = Value
+if Humanoid then
+         Humanoid.WalkSpeed = Value
+end
+end
+})
+FarmTab:CreateToggle({
+   Name = "Infinite Jump",
+   CurrentValue = false,
+   Flag = "InfJumpToggle",
+   Callback = function(Value)
+      Toggles.InfJump = Value
+      ToggleInfJump(Value)
+if Value then Rayfield:Notify({Title = "🦘 Inf Jump ON", Duration = 2}) else Rayfield:Notify({Title = "🦘 Inf Jump OFF", Duration = 2}) end
+end
+})
+FarmTab:CreateToggle({
+   Name = "Auto Collect Crowns (Ground Pickup)",
+   CurrentValue = false,
+   Flag = "AutoCollectCrownsToggle",
+   Callback = function(Value)
+      Toggles.AutoCollectCrowns = Value
+if Value then
+         StartAutoCollectCrowns()
+         Rayfield:Notify({Title = "👑 Auto Collect Crowns ON", Duration = 2})
+end
+end
+})
+-- Boss Hitbox Expander Section (Invisible Big for Bosses Only)
+FarmTab:CreateSection("🎯 Invisible Boss Hitboxes")
+FarmTab:CreateToggle({
+   Name = "Enable Invisible Boss Hitboxes",
+   CurrentValue = false,
+   Flag = "BossHitboxToggle",
+   Callback = function(Value)
+      ToggleBossHitboxExpander(Value)
+end
+})
+-- TAB 2: SHOPS/BUYS
+local ShopTab = Window:CreateTab("🛒 Shops/Buys", 4483362404)
+ShopTab:CreateButton({
+   Name = "💎 BUY ALL (Weapons/DNAs/Auras/Classes/Boosts + Crown/Winter Spam)",
+   Callback = function()
+      BuyAll()
+      Rayfield:Notify({Title = "🛒 Buy All Complete", Duration = 3})
+end
+})
+ShopTab:CreateToggle({
+   Name = "Auto Buy All (Loops Every 10s)",
+   CurrentValue = false,
+   Flag = "AutoBuyAll",
+   Callback = function(Value)
+      Toggles.AutoBuyAll = Value
+if Value then Rayfield:Notify({Title = "🛒 Auto Buy ON", Duration = 2}) end
+spawn(function()
+while Toggles.AutoBuyAll do
+            BuyAll()
+            task.wait(10)
+end
+end)
+end
+})
+ShopTab:CreateButton({
+   Name = "Claim Daily Reward",
+   Callback = function()
+      UIAction:FireServer("ClaimDailyReward")
+      Rayfield:Notify({Title = "📅 Daily Claimed", Duration = 2})
+end
+})
+-- TAB 3: TP (Sections: Spawn, Bosses, Realms, Winter)
+local TPTab = Window:CreateTab("🌐 TP", 4483362404)
+-- Spawn Area Section
+TPTab:CreateSection("🏠 Spawn Area TPs")
+TPTab:CreateButton({
+   Name = "TP to Pets",
+   Callback = function()
+      InstantTP(TPPets)
+      Rayfield:Notify({Title = "🐶 TP to Pets", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Shop",
+   Callback = function()
+      InstantTP(TPShop)
+      Rayfield:Notify({Title = "🛒 TP to Shop", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Sell",
+   Callback = function()
+      InstantTP(TPSell)
+      Rayfield:Notify({Title = "💰 TP to Sell", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Crown Shop",
+   Callback = function()
+      InstantTP(TPCrownShop)
+      Rayfield:Notify({Title = "👑 TP to Crown Shop", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Door to Dungeons",
+   Callback = function()
+      InstantTP(TPDungeonsDoor)
+      Rayfield:Notify({Title = "🚪 TP to Dungeons Door", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Crown of the Hill",
+   Callback = function()
+      InstantTP(TPCrownHill)
+      Rayfield:Notify({Title = "👑 TP to Crown Hill", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Boss at Spawn",
+   Callback = function()
+      InstantTP(TPBossSpawn)
+      Rayfield:Notify({Title = "👹 TP to Spawn Boss", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Trade Plaza",
+   Callback = function()
+      InstantTP(TPTradePlaza)
+      Rayfield:Notify({Title = "💼 TP to Trade Plaza", Duration = 2})
+end
+})
+-- Bosses Section
+TPTab:CreateSection("👹 Boss TPs")
+TPTab:CreateButton({
+   Name = "TP to Water Boss",
+   Callback = function()
+      InstantTP(TPWaterBoss)
+      Rayfield:Notify({Title = "💧 TP to Water Boss", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Earth Boss",
+   Callback = function()
+      InstantTP(TPEarthBoss)
+      Rayfield:Notify({Title = "🌍 TP to Earth Boss", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Lava Boss",
+   Callback = function()
+      InstantTP(TPLavaBoss)
+      Rayfield:Notify({Title = "🔥 TP to Lava Boss", Duration = 2})
+end
+})
+-- Realms Section
+TPTab:CreateSection("🌌 Realm TPs")
+TPTab:CreateButton({
+   Name = "TP to Plasma Realm",
+   Callback = function()
+      InstantTP(TPPlasmaRealm)
+      Rayfield:Notify({Title = "⚡ TP to Plasma Realm", Duration = 2})
+end
+})
+-- Winter TPs Section (Direct TP Only)
+TPTab:CreateSection("❄️ Winter TPs (Direct)")
+TPTab:CreateButton({
+   Name = "TP to Winter Area",
+   Callback = function()
+      InstantTP(TPWinterArea)
+      Rayfield:Notify({Title = "❄️ TP to Winter Area", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Winter Land Boss",
+   Callback = function()
+      InstantTP(TPWinterLandBoss)
+      Rayfield:Notify({Title = "👹 TP to Winter Boss", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Winter Sell",
+   Callback = function()
+      InstantTP(TPWinterSell)
+      Rayfield:Notify({Title = "💰 TP to Winter Sell", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Winter Shop Eggs",
+   Callback = function()
+      InstantTP(TPWinterShopEggs)
+      Rayfield:Notify({Title = "🥚 TP to Winter Eggs", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Winter Merchant",
+   Callback = function()
+      InstantTP(TPWinterMerchant)
+      Rayfield:Notify({Title = "🛒 TP to Winter Merchant", Duration = 2})
+end
+})
+TPTab:CreateButton({
+   Name = "TP to Winter Shop",
+   Callback = function()
+      InstantTP(TPWinterShop)
+      Rayfield:Notify({Title = "🛒 TP to Winter Shop", Duration = 2})
+end
+})
+Rayfield:LoadConfiguration()
+print("🎄 SABER HUB ULTIMATE! | Invisible Big Boss Hitboxes TOGGLE FIXED (2s Scans + Managed Events | No Lag/Bugs) | Full Farm Ready 👑🛒⚔️🌐❄️🎯")
