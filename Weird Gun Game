@@ -1,15 +1,9 @@
--- Clean Menu Template with Cheats (Fixed Rapid Fire for Semi-Auto)
--- Press RightShift to open/close
--- Added: Box ESP with Health Bar (Gold Box + Green Health Bar on Left)
--- Optimized: ESP Box calculation for less lag (uses AABB projection, only 8 points per player)
--- Integrated: Aimbot (Cam Lock), FOV Button, AimKey Button, Aim Distance Slider, Aim FOV Slider
--- Integrated: Speed Hack, Noclip, Infinite Jump
+
 local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
--- GUI Setup (same as before)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MenuTemplate"
 ScreenGui.ResetOnSpawn = false
@@ -44,7 +38,6 @@ Close.Parent = Title
 Close.MouseButton1Click:Connect(function()
     Main.Visible = false
 end)
--- Tab System (same as before)
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 150, 1, -40)
 TabFrame.Position = UDim2.new(0, 0, 0, 40)
@@ -98,17 +91,14 @@ end
 end)
 return page
 end
--- Tabs
 local Combat = CreateTab("Combat")
 local Movement = CreateTab("Movement")
 local Visuals = CreateTab("Visuals")
 local Misc = CreateTab("Misc")
 local Settings = CreateTab("Settings")
--- Default tab
 Combat.Visible = true
 CurrentPage = Combat
 TabFrame:GetChildren()[1].BackgroundColor3 = Color3.fromRGB(45, 45, 55)
--- UI Functions (Toggle only, others omitted for brevity)
 local function AddToggle(page, name, default, callback)
 local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, 36)
@@ -178,19 +168,15 @@ end
 end)
 if callback then callback(default) end
 end
--- Open/Close Menu
 UIS.InputBegan:Connect(function(input)
 if input.KeyCode == Enum.KeyCode.RightShift then
         Main.Visible = not Main.Visible
 end
 end)
--- Cheat Flags
 local infAmmo = false
 local zeroRecoil = false
 local rapidFire = false
--- Original values storage
 local originals = {}
--- Main cheat loop with proper restore + Rapid Fire fix for semi-auto
 spawn(function()
 while true do
         task.wait(0.1)
@@ -199,7 +185,6 @@ if not LocalPlayer.Character then return end
 for _, tool in pairs(LocalPlayer.Character:GetChildren()) do
 if tool:IsA("Tool") then
                     originals[tool] = originals[tool] or {}
--- Infinite Ammo
 if infAmmo then
 if not originals[tool]._ammo then
                             originals[tool]._ammo = tool:GetAttribute("_ammo") or 30
@@ -215,7 +200,6 @@ if originals[tool]._ammo then
                             originals[tool].magazineSize = nil
 end
 end
--- Zero Recoil
 if zeroRecoil then
 if not originals[tool].recoilMax then
                             originals[tool].recoilMax = tool:GetAttribute("recoilMax") or Vector2.new(1,1)
@@ -235,7 +219,6 @@ if originals[tool].recoilMax then
                             originals[tool].recoilAimReduction = nil
 end
 end
--- Rapid Fire (now works on semi-auto too)
 if rapidFire then
 if not originals[tool].rateOfFire then
                             originals[tool].rateOfFire = tool:GetAttribute("rateOfFire") or 600
@@ -255,18 +238,15 @@ end
 end
 end
 end
--- Cleanup dead tools
 for t in pairs(originals) do
 if not t.Parent then originals[t] = nil end
 end
 end)
 end
 end)
--- Toggles
 AddToggle(Combat, "Infinite Ammo", false, function(state) infAmmo = state end)
 AddToggle(Combat, "Zero Recoil", false, function(state) zeroRecoil = state end)
 AddToggle(Combat, "Rapid Fire", false, function(state) rapidFire = state end)
--- Visuals: Tracers + Box ESP
 getgenv().TracerEnabled = false
 getgenv().BoxESPEnabled = false
 getgenv().ESPTeamCheck = true
@@ -280,22 +260,18 @@ local Tracer = Drawing.new("Line")
     Tracer.Thickness = 3.0
     Tracer.Color = Color3.fromRGB(255, 215, 0)
     Tracer.Transparency = 1
--- Box Outline (Gold)
 local Outline = Drawing.new("Square")
 Outline.Thickness = 1.4
 Outline.Color = Color3.fromRGB(255, 215, 0)
 Outline.Filled = false
 Outline.Transparency = 1
--- Box Fill (Black)
 local Fill = Drawing.new("Square")
 Fill.Color = Color3.fromRGB(0, 0, 0)
 Fill.Filled = true
 Fill.Transparency = 0.72
--- Health Background
 local HealthBG = Drawing.new("Square")
 HealthBG.Color = Color3.fromRGB(25, 25, 25)
 HealthBG.Filled = true
--- Health Bar (Green)
 local HealthBar = Drawing.new("Square")
 HealthBar.Color = Color3.fromRGB(50, 255, 50)
 HealthBar.Filled = true
@@ -399,22 +375,18 @@ if getgenv().BoxESPEnabled and pos then
 local hp = char.Humanoid.Health / char.Humanoid.MaxHealth
 local healthHeight = size.Y * hp
 local healthX = pos.X - 5
--- Box Fill
     Fill.Position = pos
     Fill.Size = size
     Fill.Visible = true
     Fill.Transparency = 0.72 * alpha
--- Box Outline
     Outline.Position = pos - Vector2.new(0.5, 0.5)
     Outline.Size = size + Vector2.new(1, 1)
     Outline.Visible = true
     Outline.Transparency = alpha
--- Health Background
     HealthBG.Position = Vector2.new(healthX, pos.Y)
     HealthBG.Size = Vector2.new(3, size.Y)
     HealthBG.Visible = true
     HealthBG.Transparency = 0.6 * alpha
--- Health Bar
     HealthBar.Position = Vector2.new(healthX, pos.Y + size.Y - healthHeight)
     HealthBar.Size = Vector2.new(3, healthHeight)
     HealthBar.Visible = true
@@ -436,7 +408,6 @@ Players.PlayerAdded:Connect(function(p)
 end)
 AddToggle(Visuals, "Aimline/Tracers", false, function(state) getgenv().TracerEnabled = state end)
 AddToggle(Visuals, "Box ESP", false, function(state) getgenv().BoxESPEnabled = state end)
--- Integrated Aimbot Features
 getgenv().AimKey = Enum.UserInputType.MouseButton2
 getgenv().AimFOV = 150
 getgenv().AimDistance = 300
@@ -523,7 +494,6 @@ else
         lastTarget = nil
 end
 end)
--- Integrated Movement Features
 getgenv().SpeedHackEnabled = false
 getgenv().SpeedValue = 100
 getgenv().NoClipEnabled = false
@@ -595,4 +565,4 @@ AddToggle(Movement, "Speed Hack", false, function(v) getgenv().SpeedHackEnabled 
 AddToggle(Movement, "Noclip", false, function(v) getgenv().NoClipEnabled = v updateNoclip() end)
 AddToggle(Movement, "Infinite Jump", false, function(v) getgenv().InfiniteJumpEnabled = v updateInfJump() end)
 AddSlider(Movement, "Speed Value", 16, 500, 100, function(v) getgenv().SpeedValue = v updateSpeed() end)
-print("Weird Gun Game Menu Loaded! Rapid Fire now works on semi-auto guns too! Added Box ESP with Health Bar. Optimized for no lag. Integrated Aimbot and Movement features.")
+print("Weird Gun Game Menu Made By Reloading :p")
