@@ -36,7 +36,6 @@ Close.Font = Enum.Font.GothamBold
 Close.TextSize = 20
 Close.Parent = Title
 Close.MouseButton1Click:Connect(function() Main.Visible = false end)
--- Tab System
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0,150,1,-40)
 TabFrame.Position = UDim2.new(0,0,0,40)
@@ -87,11 +86,9 @@ local Combat = CreateTab("Combat")
 local Movement = CreateTab("Movement")
 local Visuals = CreateTab("Visuals")
 local Misc = CreateTab("Misc")
--- NEW PAGES ADDED HERE (Player removed, Settings kept)
 local Settings = CreateTab("Settings") -- Settings tab kept
 Combat.Visible = true CurrentPage = Combat
 TabFrame:GetChildren()[2].BackgroundColor3 = Color3.fromRGB(45,45,55)
--- Toggle & Slider
 local function AddToggle(page, name, default, callback)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1,0,0,36)
@@ -857,7 +854,6 @@ Players.PlayerAdded:Connect(function(plr)
         createSkeleton(plr)
     end
 end)
--- Handle player leaving
 Players.PlayerRemoving:Connect(function(plr)
     cleanupSkeleton(plr)
 end)
@@ -929,7 +925,6 @@ end
 Players.PlayerAdded:Connect(function(p)
 p.CharacterAdded:Connect(function() task.wait(1) CreateDistance(p) end)
 end)
--- TRACER ESP
 getgenv().TracerEnabled = false
 local ESP_Tracer = { Drawings = {} }
 local function CreateTracer(plr)
@@ -1003,7 +998,6 @@ end
 Players.PlayerAdded:Connect(function(p)
 p.CharacterAdded:Connect(function() task.wait(1) CreateTracer(p) end)
 end)
--- NAME ESP
 getgenv().NameEnabled = false
 local ESP_Name = { Drawings = {} }
 local function CreateName(plr)
