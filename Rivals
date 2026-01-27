@@ -1,5 +1,3 @@
--- Enhanced Menu Template with All Features
--- Press RightShift to toggle visibility
 local UIS = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -10,9 +8,6 @@ local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
--- ============================================
--- ANTI-CHEAT BYPASS (Runs First)
--- ============================================
 local fakeUserId = 1234567890
 local fakeUsername = "xAI_God"
 
@@ -38,7 +33,6 @@ local function blockRemote(remote)
     end
 end
 
--- Apply AC Bypass
 pcall(function()
     local verifyEntity = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("Replication") and ReplicatedStorage.Remotes.Replication:FindFirstChild("Fighter") and ReplicatedStorage.Remotes.Replication.Fighter:FindFirstChild("VerifyClientEntity")
     spoofRemote(verifyEntity, function(...) return true end)
@@ -72,9 +66,6 @@ end)
 
 print("[AC Bypass] Loaded successfully!")
 
--- ============================================
--- AIMBOT CONFIGURATION & VARIABLES
--- ============================================
 local AimbotConfig = {
     Enabled = false,
     FOVRadius = 150,
@@ -89,7 +80,6 @@ local AimbotConfig = {
 local lockedTarget = nil
 local isAimKeyHeld = false
 
--- FOV Circle
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Visible = true
 FOVCircle.Thickness = 2
@@ -99,9 +89,6 @@ FOVCircle.Radius = AimbotConfig.FOVRadius
 FOVCircle.Filled = false
 FOVCircle.NumSides = 64
 
--- ============================================
--- ESP CONFIGURATION & VARIABLES
--- ============================================
 local ESPConfig = {
     SkeletonEnabled = false,
     SkeletonColor = Color3.fromRGB(255, 255, 255),
@@ -137,9 +124,6 @@ local BoneConnectionsR6 = {
     {"Torso", "Right Leg"},
 }
 
--- ============================================
--- GUN COLOR CHANGER CONFIGURATION
--- ============================================
 local GunColorConfig = {
     Enabled = false,
     CurrentColor = Color3.fromRGB(255, 20, 147), -- Default: Neon Pink
@@ -162,15 +146,11 @@ local AllParts = {}
 local OriginalColors = {} -- Store original colors
 local skipNames = {"muzzle", "flash", "effect", "glow", "spark", "trail", "beam", "particle"}
 
--- ============================================
--- GUI SETUP
--- ============================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MenuTemplate"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game.CoreGui
 
--- Popup Setup
 local PopupFrame = Instance.new("Frame")
 PopupFrame.Size = UDim2.new(0, 400, 0, 150)
 PopupFrame.Position = UDim2.new(0.5, -200, 0.5, -75)
@@ -208,7 +188,6 @@ PopupText.TextWrapped = true
 PopupText.TextYAlignment = Enum.TextYAlignment.Center
 PopupText.Parent = PopupFrame
 
--- Main Menu
 local Main = Instance.new("Frame")
 Main.Size = UDim2.new(0, 680, 0, 560)
 Main.Position = UDim2.new(0.5, -340, 0.5, -280)
@@ -251,7 +230,6 @@ Close.MouseButton1Click:Connect(function()
     Main.Visible = false
 end)
 
--- Tab System
 local TabFrame = Instance.new("Frame")
 TabFrame.Size = UDim2.new(0, 150, 1, -40)
 TabFrame.Position = UDim2.new(0, 0, 0, 40)
@@ -320,7 +298,6 @@ local function CreateTab(name)
     return page
 end
 
--- UI Elements Functions
 local function AddToggle(page, name, default, callback)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, 36)
@@ -507,20 +484,15 @@ local function AddDropdown(page, name, options, default, callback)
     end)
 end
 
--- Create tabs
 local Combat = CreateTab("Combat")
 local Visuals = CreateTab("Visuals")
 local Misc = CreateTab("Misc")
 local Movement = CreateTab("Movement")
 
--- Default open tab
 Combat.Visible = true
 CurrentPage = Combat
 TabFrame:GetChildren()[2].BackgroundColor3 = Color3.fromRGB(45, 45, 55)
 
--- ============================================
--- AIMBOT FUNCTIONS
--- ============================================
 getgenv().AimKey = Enum.UserInputType.MouseButton2
 
 local function isVisible(targetPart)
@@ -623,9 +595,6 @@ local function aimAt(targetPart)
     return false
 end
 
--- ============================================
--- ESP FUNCTIONS
--- ============================================
 local function CreateSkeleton(player)
     local skeleton = {}
     
@@ -939,9 +908,6 @@ local function UpdateBoxESP()
     end
 end
 
--- ============================================
--- GUN COLOR CHANGER FUNCTIONS
--- ============================================
 local function shouldSkip(name)
     name = name:lower()
     for _, s in ipairs(skipNames) do
@@ -1051,13 +1017,7 @@ Workspace.ChildAdded:Connect(function(child)
     end
 end)
 
--- ============================================
--- POPULATE MENU WITH FEATURES
--- ============================================
 
--- ============================================
--- HELPER FUNCTIONS FOR ORDERED LAYOUT
--- ============================================
 local function CreateOrderedToggle(page, name, default, order, callback)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, 36)
@@ -1143,6 +1103,25 @@ local function CreateOrderedSlider(page, name, min, max, default, order, callbac
     fillCorner.CornerRadius = UDim.new(1, 0)
     fillCorner.Parent = fill
     
+
+    local knob = Instance.new("TextButton")
+    knob.Size = UDim2.new(0, 18, 0, 18)
+    knob.Position = UDim2.new((default - min) / (max - min), -9, 0.5, -9)
+    knob.BackgroundTransparency = 1
+    knob.BorderSizePixel = 0
+    knob.Text = ""
+    knob.AutoButtonColor = false
+    knob.Active = true
+    knob.ZIndex = 2
+    knob.Parent = bar
+    
+    local knobCorner = Instance.new("UICorner")
+    knobCorner.CornerRadius = UDim.new(1, 0)
+    knobCorner.Parent = knob
+    
+
+    bar.Active = true
+    
     local dragging = false
     
     local function updateSlider(mousePos)
@@ -1151,21 +1130,22 @@ local function CreateOrderedSlider(page, name, min, max, default, order, callbac
         local value = math.floor(min + (max - min) * percent)
         
         fill.Size = UDim2.new(percent, 0, 1, 0)
+        knob.Position = UDim2.new(percent, -9, 0.5, -9)
         label.Text = name .. ": " .. value
         
         if callback then callback(value) end
     end
     
+
+    knob.MouseButton1Down:Connect(function()
+        dragging = true
+    end)
+    
+
     bar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             updateSlider(input.Position)
-        end
-    end)
-    
-    bar.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
         end
     end)
     
@@ -1262,11 +1242,7 @@ local function CreateOrderedDropdown(page, name, options, default, order, callba
     end)
 end
 
--- ============================================
--- COMBAT TAB - Layout: Aim Key → Toggles → Sliders
--- ============================================
 
--- Aim Key at the top
 local keyNames = {
     [Enum.UserInputType.MouseButton1] = "Left Click",
     [Enum.UserInputType.MouseButton2] = "Right Click"
@@ -1313,7 +1289,6 @@ AimKeyButton.MouseButton1Click:Connect(function()
     print("Aim Key changed to", keyNames[getgenv().AimKey])
 end)
 
--- Then toggles
 CreateOrderedToggle(Combat, "Enable Aimbot", false, 2, function(state)
     AimbotConfig.Enabled = state
     print("Aimbot:", state and "Enabled" or "Disabled")
@@ -1330,7 +1305,6 @@ CreateOrderedToggle(Combat, "Wall Check", true, 4, function(state)
     print("Wall Check:", state and "Enabled" or "Disabled")
 end)
 
--- Then sliders
 CreateOrderedSlider(Combat, "FOV Size", 50, 500, 150, 5, function(value)
     AimbotConfig.FOVRadius = value
     FOVCircle.Radius = value
@@ -1346,7 +1320,6 @@ CreateOrderedSlider(Combat, "Aim Range", 100, 5000, 2000, 7, function(value)
     AimbotConfig.MaxRange = value
 end)
 
--- Add footer to Combat tab at the end
 local function AddFooter(page, order)
     local footer = Instance.new("TextLabel")
     footer.Size = UDim2.new(1, 0, 0, 40)
@@ -1362,9 +1335,6 @@ end
 
 AddFooter(Combat, 999)
 
--- ============================================
--- VISUALS TAB - Layout: Toggles at top
--- ============================================
 CreateOrderedToggle(Visuals, "Skeleton ESP", false, 1, function(state)
     ESPConfig.SkeletonEnabled = state
     print("Skeleton ESP:", state and "Enabled" or "Disabled")
@@ -1377,11 +1347,6 @@ end)
 
 AddFooter(Visuals, 999)
 
--- ============================================
--- ============================================
--- MOVEMENT TAB
--- ============================================
--- Movement Config
 local MovementConfig = {
     FlyEnabled = false,
     FlySpeed = 50,
@@ -1523,8 +1488,6 @@ end)
 
 AddFooter(Movement, 999)
 
--- MISC TAB - Layout: Toggle at top, dropdown below
--- ============================================
 CreateOrderedToggle(Misc, "Gun Color Changer", false, 1, function(state)
     GunColorConfig.Enabled = state
     print("Gun Color Changer:", state and "Enabled" or "Disabled")
@@ -1548,14 +1511,10 @@ end)
 
 AddFooter(Misc, 999)
 
--- ============================================
--- RUNTIME UPDATES
--- ============================================
 
 local espUpdateTick = 0
 local rainbowHue = 0
 
--- Update FOV Circle position and aimbot
 RunService.RenderStepped:Connect(function()
     local screenCenter = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
     FOVCircle.Position = screenCenter
@@ -1620,7 +1579,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Infinite Jump Handler
 UIS.JumpRequest:Connect(function()
     if MovementConfig.InfiniteJumpEnabled then
         local character = LocalPlayer.Character
@@ -1633,7 +1591,6 @@ UIS.JumpRequest:Connect(function()
     end
 end)
 
--- Input handling
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
@@ -1653,7 +1610,6 @@ UIS.InputEnded:Connect(function(input)
     end
 end)
 
--- Hook existing players for ESP
 for _, player in ipairs(Players:GetPlayers()) do
     if player ~= LocalPlayer then
         CreateSkeleton(player)
@@ -1672,7 +1628,6 @@ Players.PlayerRemoving:Connect(function(player)
     RemoveSkeleton(player)
     RemoveBoxESP(player)
 end)
--- Character respawn handlers for movement
 LocalPlayer.CharacterAdded:Connect(function(char)
     CollectParts()
     if MovementConfig.FlyEnabled then
@@ -1690,7 +1645,6 @@ LocalPlayer.CharacterRemoving:Connect(function()
 end)
 
 
--- Popup Animation
 local function showPopup()
     TweenService:Create(PopupFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
     TweenService:Create(PopupText, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
@@ -1721,7 +1675,6 @@ print("✓ Aimbot with FOV, Smoothness, Range & Wall Check")
 print("✓ Skeleton ESP")
 print("✓ Corner Box ESP with Health")
 print("✓ Gun Color Changer (with Rainbow!)")
-print("✓ Movement: Fly, No Clip, Infinite Jump")
 print("✓ Anti-Cheat Bypass")
 print("═══════════════════════════════════════")
 print("Made by Reloading | Discord: https://discord.gg/h7YtQSmhfV")
