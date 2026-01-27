@@ -1144,9 +1144,22 @@ local function CreateOrderedSlider(page, name, min, max, default, order, callbac
     fillCorner.Parent = fill
     
     local dragging = false
+    
+    local function updateSlider(mousePos)
+        local relativePos = mousePos.X - bar.AbsolutePosition.X
+        local percent = math.clamp(relativePos / bar.AbsoluteSize.X, 0, 1)
+        local value = math.floor(min + (max - min) * percent)
+        
+        fill.Size = UDim2.new(percent, 0, 1, 0)
+        label.Text = name .. ": " .. value
+        
+        if callback then callback(value) end
+    end
+    
     bar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
+            updateSlider(input.Position)
         end
     end)
     
@@ -1158,21 +1171,17 @@ local function CreateOrderedSlider(page, name, min, max, default, order, callbac
     
     UIS.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local percent = math.clamp((input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
-            local value = math.floor(min + (max - min) * percent)
-            fill.Size = UDim2.new(percent, 0, 1, 0)
-            label.Text = name .. ": " .. value
-            if callback then callback(value) end
+            updateSlider(input.Position)
         end
     end)
     
-    if callback then callback(default) end
     UIS.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
     end)
-
+    
+    if callback then callback(default) end
 end
 
 local function CreateOrderedDropdown(page, name, options, default, order, callback)
