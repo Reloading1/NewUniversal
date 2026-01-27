@@ -7,10 +7,6 @@ local Mouse = LocalPlayer:GetMouse()
 local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
-
-local fakeUserId = 1234567890
-local fakeUsername = "xAI_God"
-
 local function spoofRemote(remote, spoofFunc)
     if remote then
         if remote:IsA("RemoteFunction") then
@@ -32,7 +28,6 @@ local function blockRemote(remote)
         warn("[Bypass] Remote not found for blocking")
     end
 end
-
 pcall(function()
     local verifyEntity = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("Replication") and ReplicatedStorage.Remotes.Replication:FindFirstChild("Fighter") and ReplicatedStorage.Remotes.Replication.Fighter:FindFirstChild("VerifyClientEntity")
     spoofRemote(verifyEntity, function(...) return true end)
@@ -63,7 +58,6 @@ pcall(function()
         }
     end)
 end)
-
 print("[AC Bypass] Loaded successfully!")
 
 local AimbotConfig = {
@@ -88,17 +82,14 @@ FOVCircle.Transparency = 0.7
 FOVCircle.Radius = AimbotConfig.FOVRadius
 FOVCircle.Filled = false
 FOVCircle.NumSides = 64
-
 local ESPConfig = {
     SkeletonEnabled = false,
     SkeletonColor = Color3.fromRGB(255, 255, 255),
     BoxEnabled = false,
     BoxColor = Color3.fromRGB(255, 255, 255),
 }
-
 local SkeletonObjects = {}
 local BoxESPObjects = {}
-
 local BoneConnections = {
     {"Head", "UpperTorso"},
     {"UpperTorso", "LowerTorso"},
